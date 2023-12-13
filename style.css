@@ -70,3 +70,39 @@ p {
     width: 1000px;
 }
 
+#new_time_button {
+    margin: 50px;
+    width: 100px;
+    height: 40px;
+    background-color: #41E169;
+    border: 1px solid #f3f4f7;
+    border-radius: 20px;
+    color: #f3f4f7;
+    font-family: Cambria, 'sans-serif';
+    font-size: 110%;
+    cursor: pointer;
+}
+
+#new_time_button:hover {
+    opacity: 0.90;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form input {
+    margin-bottom: 15px;
+}
+
+form button {
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+dialog button {
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+

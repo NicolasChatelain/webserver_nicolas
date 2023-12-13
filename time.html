@@ -22,6 +22,20 @@
     <div>
         <canvas id="myChart"></canvas>
     </div>
+    <button id="new_time_button" >Add time</button>
+
+    <dialog id="new_time_modal">
+        <button id="close_modal">X</button>
+        <form method="dialog" id="work_time_form">
+            <label for="day_input">Day</label>
+            <input id="day_input" type="date" required>
+
+            <label for="time_input">Time in minutes</label>
+            <input id="time_input" type="text" required>
+
+            <button type="submit">Add</button>
+        </form>
+    </dialog>
 </main>
 <script src="times.js"></script>
 </body>
