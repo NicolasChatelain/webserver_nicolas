@@ -8,8 +8,6 @@ use mongodb::sync::Client;
 use mongodb::bson::{doc, Document};
 use mongodb::sync::Database;
 
-use serde::Serialize;
-use serde::Deserialize;
 use serde_json::Value;
 
 fn connect_to_database() -> Database {
@@ -44,10 +42,11 @@ pub fn get_total_time() {
     file.write_all(json_vec.as_bytes()).unwrap();
 }
 
-pub fn post_new_time(body: &str) {
+pub fn post_new_time(body: &str) -> bool {
 
     let trimmed_body = body.trim_matches(char::from(0)); // door de 'fixed size' byte vector (1024) moet ik de extra values weg trimmen.
     let parsed_data: Result<Value, _> = serde_json::from_str(trimmed_body);
+
 
     match parsed_data {
         Ok(json_value) => {
@@ -57,14 +56,14 @@ pub fn post_new_time(body: &str) {
                 "minutes": json_value["minutes"].as_str().unwrap_or("0").parse::<i32>().unwrap_or_default(),
             };
 
-
             let db = connect_to_database();
             let result = db.collection::<Document>("workhours").insert_one(document, None).unwrap();
             println!("{}", result.inserted_id);
+            true // return true bij succes
         }
         Err(e) => {
             eprintln!("ERROR PARSING JSON: {}", e);
-            return;
+            false // return false bij fout
         }
     }
 

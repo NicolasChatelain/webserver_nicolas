@@ -3,8 +3,7 @@ use std::net::TcpStream;
 use std::io::*;
 use std::str;
 use std::time::Duration;
-
-use super::database;
+use crate::database;
 
 
 pub fn handle_connection(mut stream: TcpStream) {
@@ -25,7 +24,7 @@ pub fn handle_connection(mut stream: TcpStream) {
     } else if request_header.starts_with("POST") {
         response = handle_post_request(request_header, body);
     } else {
-        eprintln!("BAD REQUEST.")
+        eprintln!("BAD REQUEST: {}", request_header);
     }
 
     stream.write_all(response.as_bytes()).unwrap();
@@ -46,19 +45,40 @@ fn handle_get_request(request: &str) -> String {
             ("HTTP/1.1 200 OK", "time.html")
         }
         "GET /times.js HTTP/1.1" => ("HTTP/1.1 200 OK", "times.js"),
-        "GET /data.json HTTP/1.1" => ("HTTP/1.1 200 OK", "data.json"),
+        "GET /data.json HTTP/1.1" => {
+            database::get_total_time();
+            ("HTTP/1.1 200 OK", "data.json")
+        },
         _ => ("HTTP/1.1 404 NOT FOUND", "NotFound.html")
     };
+
+    make_http_response(status, filename)
+}
+
+fn handle_post_request(request: &str, body: &str) -> String {
+
+    let (status, filename) = match request {
+        "POST /time/new HTTP/1.1" => {
+            if database::post_new_time(body) {
+                database::get_total_time();
+                ("HTTP/1.1 201 CREATED", "time.html")
+            } else {
+                ("HTTP/1.1 500 INTERNAL SERVER ERROR", "time.html")
+            }
+        },
+        _ => ("HTTP/1.1 404 NOT FOUND", "NotFound.html")
+    };
+
+    make_http_response(status, filename)
+}
+
+fn make_http_response(status_line: &str, filename: &str) -> String {
 
     let body = fs::read_to_string(filename).unwrap();
     let body_length = body.len();
 
-    let http_response = format!("{}\r\nContent-Length: {}\r\n\r\n{}", status, body_length, body);
+    let http_response = format!("{}\r\nContent-Length: {}\r\n\r\n{}", status_line, body_length, body);
 
     http_response
-}
 
-fn handle_post_request(request: &str, body: &str) -> String {
-    database::post_new_time(body);
-    String::new()
 }

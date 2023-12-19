@@ -45,8 +45,8 @@ const addNewTime = () => {
 }
 
 const newTimeSubmitted = async () => {
-
     const form = document.querySelector("#work_time_form");
+
 
     form.addEventListener("submit",  async () => {
 
@@ -62,8 +62,9 @@ const newTimeSubmitted = async () => {
 
 
         const json_data = JSON.stringify(formdata);
-        
+
         try {
+
             const response = await fetch("http://localhost:7878/time/new", {
                 method: "POST",
                 headers: {
@@ -71,14 +72,14 @@ const newTimeSubmitted = async () => {
                 },
                 body: json_data
             });
-            console.log(json_data);
-            console.log(response);
+
+            window.location.reload(true);
+
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
 
-    })
-
+    });
 }
 
 newTimeSubmitted();
