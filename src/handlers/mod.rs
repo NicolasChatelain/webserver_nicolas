@@ -33,23 +33,23 @@ pub fn handle_connection(mut stream: TcpStream) {
 
 fn handle_get_request(request: &str) -> String {
     let (status, filename) = match request {
-        "GET / HTTP/1.1" => ("HTTP/1.1 200 OK", "index.html"),
-        "GET /style.css HTTP/1.1" => ("HTTP/1.1 200 OK", "style.css"),
+        "GET / HTTP/1.1" => ("HTTP/1.1 200 OK", "client/html/index.html"),
+        "GET /css/style.css HTTP/1.1" => ("HTTP/1.1 200 OK", "client/css/style.css"),
         "GET /slowrequest HTTP/1.1" => {
             thread::sleep(Duration::from_secs(3));
-            ("HTTP/1.1 200 OK", "slowrequest.html")
+            ("HTTP/1.1 200 OK", "client/html/slowrequest.html")
         }
-        "GET /about HTTP/1.1" => ("HTTP/1.1 200 OK", "about.html"),
+        "GET /about HTTP/1.1" => ("HTTP/1.1 200 OK", "client/html/about.html"),
         "GET /time HTTP/1.1" => {
             database::get_total_time();
-            ("HTTP/1.1 200 OK", "time.html")
+            ("HTTP/1.1 200 OK", "client/html/time.html")
         }
-        "GET /times.js HTTP/1.1" => ("HTTP/1.1 200 OK", "times.js"),
+        "GET /javascript/times.js HTTP/1.1" => ("HTTP/1.1 200 OK", "client/javascript/times.js"),
         "GET /data.json HTTP/1.1" => {
             database::get_total_time();
             ("HTTP/1.1 200 OK", "data.json")
         },
-        _ => ("HTTP/1.1 404 NOT FOUND", "NotFound.html")
+        _ => ("HTTP/1.1 404 NOT FOUND", "client/html/NotFound.html")
     };
 
     make_http_response(status, filename)
@@ -61,12 +61,12 @@ fn handle_post_request(request: &str, body: &str) -> String {
         "POST /time/new HTTP/1.1" => {
             if database::post_new_time(body) {
                 database::get_total_time();
-                ("HTTP/1.1 201 CREATED", "time.html")
+                ("HTTP/1.1 201 CREATED", "client/html/time.html")
             } else {
-                ("HTTP/1.1 500 INTERNAL SERVER ERROR", "time.html")
+                ("HTTP/1.1 500 INTERNAL SERVER ERROR", "client/html/time.html")
             }
         },
-        _ => ("HTTP/1.1 404 NOT FOUND", "NotFound.html")
+        _ => ("HTTP/1.1 404 NOT FOUND", "client/html/NotFound.html")
     };
 
     make_http_response(status, filename)
